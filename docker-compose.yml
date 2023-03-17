@@ -1,0 +1,32 @@
+version: "3"
+services:
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/symfony.conf:/etc/nginx/conf.d/symfony.conf
+      - ./symfony:/app/symfony
+      - ./certs:/certs
+
+  app:
+    build: app
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app/entrypoint-nginx.sh:/entrypoint.sh
+      - ./symfony:/app/symfony
+      - ./app/www.conf:/etc/php/8.2/fpm/pool.d/www.conf
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: abc123.
+      MYSQL_DATABASE: dblemp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: abc123.
+    volumes:
+      - ./db/db.sql:/var/lib/mysql/db.sql
+
+volumes:
+  db:
